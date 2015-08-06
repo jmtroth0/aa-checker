@@ -78,7 +78,7 @@ class Piece
   end
 
   def to_s
-    "O".colorize(color)
+    king? ? "K".colorize(color) : "O".colorize(color)
   end
 
   def inspect
