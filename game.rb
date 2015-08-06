@@ -45,7 +45,6 @@ class Game
   end
 end
 
-
 class HumanPlayer
   attr_reader :color, :board
 
@@ -61,14 +60,28 @@ class HumanPlayer
     begin
       moves = convert_to_move_sequence(gets.chomp)
     raise "Not on Board" unless moves.all? { |move| board.on_board?(move) }
-    # rescue => e
-    #   puts e
-    #   puts "Try again."
+    rescue => e
+      puts e
+      puts "Try again."
+      retry
     end
     moves
   end
 
   def convert_to_move_sequence(move)
     move.split.map { |move| move.split("").map { |coord| coord.to_i - 1 } }
+  end
+end
+
+class ComputerPlayer
+  def initialize(color, board)
+    @color = color
+    @board = board
+  end
+
+  def moves
+    board.pieces.each do |piece|
+      
+    end
   end
 end
