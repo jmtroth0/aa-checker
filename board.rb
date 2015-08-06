@@ -2,6 +2,8 @@ require_relative 'piece'
 
 class Board
   BOARD_SIZE = 8
+  ROWS_TO_SETUP = {0 => :white, 1 => :white, 2 => :white,
+                   5 => :black, 6 => :black, 7 => :black }
   WHITE_ROWS_TO_SETUP = [0,1,2]
   BLACK_ROWS_TO_SETUP = [5,6,7]
 
@@ -33,37 +35,10 @@ class Board
   end
 
   def setup_board
-    setup_white
-    setup_black
-  end
-
-  def setup_white
     rows.each_with_index do |row, idx|
-      if WHITE_ROWS_TO_SETUP.include?(idx)
-        if idx.even? &&
-          row.each_with_index do |square, jdx|
-            Piece.new([idx, jdx], self, :white) if jdx.even?
-          end
-        elsif WHITE_ROWS_TO_SETUP.include?(idx)
-          row.each_with_index do |square, jdx|
-            Piece.new([idx, jdx], self, :white) if jdx.odd?
-          end
-        end
-      end
-    end
-  end
-
-  def setup_black
-    rows.each_with_index do |row, idx|
-      if BLACK_ROWS_TO_SETUP.include?(idx)
-        if idx.odd?
-          row.each_with_index do |square, jdx|
-            Piece.new([idx, jdx], self, :black) if jdx.odd?
-          end
-        else
-          row.each_with_index do |square, jdx|
-            Piece.new([idx, jdx], self, :black) if jdx.even?
-          end
+      if ROWS_TO_SETUP.keys.include?(idx)
+        row.each_with_index do |square, jdx|
+          Piece.new([idx, jdx], self, ROWS_TO_SETUP[idx]) if (jdx+idx).even?
         end
       end
     end
