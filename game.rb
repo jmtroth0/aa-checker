@@ -31,11 +31,11 @@ class Game
       elsif !board[moves.first].is_color?(current_player.color)
         raise InvalidMoveError.new("Move your own pieces.")
       end
+      raise InvalidMoveError unless board[moves.first].perform_moves(moves)
     rescue InvalidMoveError => e
       puts e
       retry
     end
-    board.move(moves)
   end
 
   private
@@ -54,7 +54,7 @@ class HumanPlayer
   end
 
   def prompt
-    print "Where would you like to move. If there are multiple places, just add"
+    print "Where would you like to move? If there are multiple places, just add"
     puts " a space between locations. Put the row first, then the column"
 
     begin
@@ -81,7 +81,7 @@ class ComputerPlayer
 
   def moves
     board.pieces.each do |piece|
-      
+
     end
   end
 end

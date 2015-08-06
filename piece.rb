@@ -15,6 +15,7 @@ class Piece
 
   def perform_moves(move_sequence)
     delta_sequence = convert_to_deltas(move_sequence)
+
     if valid_move_seq?(delta_sequence)
       perform_moves!(delta_sequence)
     else
@@ -47,10 +48,9 @@ class Piece
 
   def perform_slide(delta)
     destination = moved_pos(delta)
-    unless board.on_board?(destination) && board[destination].nil? &&
-                                                deltas.include?(delta)
-      false
-    end
+    return false unless board.on_board?(destination) &&
+                          board[destination].nil? &&
+                          deltas.include?(delta)
     slide_to(destination)
     maybe_promote
     true
@@ -60,10 +60,10 @@ class Piece
     jumped_location = moved_pos(delta.map { |coord_delta| coord_delta / 2 })
     destination = moved_pos(delta)
 
-    unless board.on_board?(destination) && deltas.include?(delta) &&
+    return false unless board.on_board?(destination) &&
+                          deltas.include?(delta) &&
                           jump_possible?(destination, jumped_location)
-      false
-    end
+
     jump_to(destination, jumped_location)
     maybe_promote
     true
@@ -102,7 +102,7 @@ class Piece
   end
 
   def deltas
-    moves = king? ? [[-1, 1], [-1,-1]] + DELTAS : DELTAS
+    moves = king? ? DELTAS + [[ -1, 1], [ -1, -1], [ -2, 2], [ -2, -2]] : DELTAS
     color == :white ? moves : moves.map { |move| [move[0] * -1, move[1]] }
   end
 
