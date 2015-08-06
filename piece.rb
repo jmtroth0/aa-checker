@@ -48,9 +48,11 @@ class Piece
 
   def perform_slide(delta)
     destination = moved_pos(delta)
-    return false unless board.on_board?(destination) &&
+    unless board.on_board?(destination) &&
                           board[destination].nil? &&
                           deltas.include?(delta)
+      false
+    end
     slide_to(destination)
     maybe_promote
     true
@@ -60,10 +62,11 @@ class Piece
     jumped_location = moved_pos(delta.map { |coord_delta| coord_delta / 2 })
     destination = moved_pos(delta)
 
-    return false unless board.on_board?(destination) &&
+    unless board.on_board?(destination) &&
                           deltas.include?(delta) &&
                           jump_possible?(destination, jumped_location)
-
+      false
+    end
     jump_to(destination, jumped_location)
     maybe_promote
     true
