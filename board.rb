@@ -29,37 +29,44 @@ class Board
 
   def setup_white
     rows.each_with_index do |row, idx|
-      if idx.even? && WHITE_ROWS_TO_SETUP.include?(idx)
-        row.each_with_index do |square, jdx|
-          Piece.new([idx, jdx], self, :white) if jdx.even?
-        end
-      elsif WHITE_ROWS_TO_SETUP.include?(idx)
-        row.each_with_index do |square, jdx|
-          Piece.new([idx, jdx], self, :white) if jdx.odd?
+      if WHITE_ROWS_TO_SETUP.include?(idx)
+        if idx.even? &&
+          row.each_with_index do |square, jdx|
+            Piece.new([idx, jdx], self, :white) if jdx.even?
+          end
+        elsif WHITE_ROWS_TO_SETUP.include?(idx)
+          row.each_with_index do |square, jdx|
+            Piece.new([idx, jdx], self, :white) if jdx.odd?
+          end
         end
       end
     end
   end
 
   def setup_black
-
     rows.each_with_index do |row, idx|
-      if idx.odd? && BLACK_ROWS_TO_SETUP.include?(idx)
-        row.each_with_index do |square, jdx|
-          Piece.new([idx, jdx], self, :black) if jdx.odd?
-        end
-      elsif BLACK_ROWS_TO_SETUP.include?(idx)
-        row.each_with_index do |square, jdx|
-          Piece.new([idx, jdx], self, :black) if jdx.even?
+      if BLACK_ROWS_TO_SETUP.include?(idx)
+        if idx.odd?
+          row.each_with_index do |square, jdx|
+            Piece.new([idx, jdx], self, :black) if jdx.odd?
+          end
+        else
+          row.each_with_index do |square, jdx|
+            Piece.new([idx, jdx], self, :black) if jdx.even?
+          end
         end
       end
     end
   end
 
+  def on_board?(pos)
+    pos.all? { |coord| coord.between?(0, BOARD_SIZE - 1) }
+  end
+
   def render
-    board.each do |row|
+    board.each_with_index do |row, idx|
       rendered_row = row.map { |square| square.nil? ? "[ ]" : "[#{square}]" }
-      puts rendered_row.join("")
+      puts "#{idx} #{rendered_row.join("")}"
     end
     nil
   end
