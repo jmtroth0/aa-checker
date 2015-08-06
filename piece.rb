@@ -2,9 +2,7 @@ require 'colorize'
 require 'byebug'
 
 class Piece
-  SLIDE_DELTAS = [[ 1, 1], [ 1, -1]]
-  WHITE_JUMP_DELTAS =  [[ 2, 2], [ 2, -2]]
-  BLACK_JUMP_DELTAS =  [[ -2, 2], [ -2, -2]]
+  DELTAS = [[ 1, 1], [ 1, -1], [ 2, 2], [ 2, -2]]
 
   attr_reader :board, :color, :possible_moves
   attr_accessor :pos
@@ -34,36 +32,38 @@ class Piece
 
   def perform_moves!(delta_sequence)
     if delta_sequence.length == 1
-      perform_slide(delta_sequence.first)
-      return
-    end
-
-    delta_sequence.each do |delta|
-      perform_jump(delta)
+      raise InvalidMoveError unless perform_slide(delta_sequence.first) ||
+                                    perform_jump(delta_sequence.first)
+    else
+      delta_sequence.each do |delta|
+        raise InvalidMoveError unless perform_jump(delta)
+      end
     end
   end
 
   def perform_slide(delta)
+    p delta
     destination = moved_pos(delta)
     unless board.on_board?(destination) &&
-                  board[destination].nil? && slide_deltas.include?(delta)
-      raise InvalidMoveError.new("Can't slide there.")
+                  board[destination].nil? && deltas.include?(delta)
+      false
     end
     slide_to(destination)
     maybe_promote
-    nil
+    true
   end
 
   def perform_jump(delta)
     jumped_location = moved_pos(delta.map { |coord_delta| coord_delta / 2 })
     destination = moved_pos(delta)
-    unless board.on_board?(destination) && jump_deltas.include?(delta) &&
+
+    unless board.on_board?(destination) && deltas.include?(delta) &&
                           jump_possible?(destination, jumped_location)
-      raise InvalidMoveError.new("Can't jump there.")
+      false
     end
     jump_to(destination, jumped_location)
     maybe_promote
-    nil
+    true
   end
 
   def dup(new_board)
@@ -94,9 +94,9 @@ class Piece
     board[pos] = self
   end
 
-  def slide_deltas
-    moves = king? ? [[-1, 1], [-1,-1]] + SLIDE_DELTAS : SLIDE_DELTAS
-    color == :white ? moves : moves.map { |move| move * -1}
+  def deltas
+    moves = king? ? [[-1, 1], [-1,-1]] + DELTAS : DELTAS
+    color == :white ? moves : moves.map { |move| [move[0] * -1, move[1]] }
   end
 
   def jump_to(destination, jumped_location)
@@ -104,11 +104,6 @@ class Piece
     self.pos = destination
     board[destination] = self
     board[jumped_location] = nil
-  end
-
-  def jump_deltas
-    return WHITE_JUMP_DELTAS + BLACK_JUMP_DELTAS if king?
-    deltas = color == :white ? WHITE_JUMP_DELTAS : BLACK_JUMP_DELTAS
   end
 
   def jump_possible?(moved_pos, jumped_location)
