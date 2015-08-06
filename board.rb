@@ -7,9 +7,9 @@ class Board
 
   attr_reader :board
 
-  def initialize
+  def initialize(setup = true)
     @board = Array.new(BOARD_SIZE) { Array.new(BOARD_SIZE) }
-    setup_board
+    setup_board if setup
   end
 
   def [](pos)
@@ -20,6 +20,16 @@ class Board
   def []=(pos, value)
     x, y = pos
     board[x][y] = value
+  end
+
+  def pieces
+    board.flatten.compact
+  end
+
+  def dup
+    new_board = Board.new(false)
+    pieces.each { |piece| piece.dup(new_board) }
+    new_board
   end
 
   def setup_board
