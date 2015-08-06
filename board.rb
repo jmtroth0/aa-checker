@@ -28,6 +28,20 @@ class Board
     board.flatten.compact
   end
 
+  def lost?(color)
+    pieces.all? { |piece| piece.color != color}
+  end
+
+  def over?
+    lost?(:black) || lost?(:white)
+  end
+
+  def winner
+    return :white if lost?(:black)
+    return :black if lost?(:white)
+    false
+  end
+
   def dup
     new_board = Board.new(false)
     pieces.each { |piece| piece.dup(new_board) }
@@ -49,9 +63,11 @@ class Board
   end
 
   def render
+    puts "   " + (1..8).to_a.join("  ")
+
     board.each_with_index do |row, idx|
       rendered_row = row.map { |square| square.nil? ? "[ ]" : "[#{square}]" }
-      puts "#{idx} #{rendered_row.join("")}"
+      puts "#{idx + 1} #{rendered_row.join("")}"
     end
     nil
   end
