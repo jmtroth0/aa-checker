@@ -24,8 +24,20 @@ class Board
     board[x][y] = value
   end
 
+  def move(move_sequence)
+    self[move_sequence.first].perform_moves(move_sequence)
+  end
+
   def pieces
     board.flatten.compact
+  end
+
+  def piece_at?(pos)
+    !!self[pos]
+  end
+
+  def is_color?(pos, color)
+    self[pos] == color
   end
 
   def lost?(color)
