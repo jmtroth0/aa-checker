@@ -42,7 +42,6 @@ class Piece
   end
 
   def perform_slide(delta)
-    p delta
     destination = moved_pos(delta)
     unless board.on_board?(destination) &&
                   board[destination].nil? && deltas.include?(delta)
