@@ -64,6 +64,10 @@ class Board
     nil
   end
 
+  def inspect
+    render
+  end
+
   private
 
   def rows
