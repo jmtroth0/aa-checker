@@ -26,10 +26,10 @@ class Game
   def play_turn
     begin
       moves = current_player.prompt
-      if board.is_color?(moves.first, current_player.color)
-        raise InvalidMoveError.new("Move your own pieces.")
-      elsif !board.piece_at?(moves.first)
+      if !board.piece_at?(moves.first)
         raise InvalidMoveError.new("You don't have a piece there")
+      elsif !board[moves.first].is_color?(current_player.color)
+        raise InvalidMoveError.new("Move your own pieces.")
       end
     rescue InvalidMoveError => e
       puts e

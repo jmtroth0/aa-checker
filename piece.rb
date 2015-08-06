@@ -22,10 +22,10 @@ class Piece
     end
   end
 
-  def valid_move_seq?(move_sequence)
+  def valid_move_seq?(delta_sequence)
     new_board = board.dup
     begin
-      new_board[pos].perform_moves!(move_sequence)
+      new_board[pos].perform_moves!(delta_sequence)
     rescue InvalidMoveError => e
       puts e
       false
@@ -67,6 +67,10 @@ class Piece
     jump_to(destination, jumped_location)
     maybe_promote
     true
+  end
+
+  def is_color?(other_color)
+    color == other_color
   end
 
   def dup(new_board)

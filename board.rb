@@ -36,10 +36,6 @@ class Board
     !!self[pos]
   end
 
-  def is_color?(pos, color)
-    self[pos] == color
-  end
-
   def lost?(color)
     pieces.all? { |piece| piece.color != color}
   end
