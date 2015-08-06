@@ -15,7 +15,11 @@ class Piece
 
   def perform_moves(move_sequence)
     delta_sequence = convert_to_deltas(move_sequence)
-    perform_moves!(delta_sequence) if valid_move_seq?(delta_sequence)
+    if valid_move_seq?(delta_sequence)
+      perform_moves!(delta_sequence)
+    else
+      false
+    end
   end
 
   def valid_move_seq?(move_sequence)
@@ -43,8 +47,8 @@ class Piece
 
   def perform_slide(delta)
     destination = moved_pos(delta)
-    unless board.on_board?(destination) &&
-                  board[destination].nil? && deltas.include?(delta)
+    unless board.on_board?(destination) && board[destination].nil? &&
+                                                deltas.include?(delta)
       false
     end
     slide_to(destination)
@@ -109,10 +113,6 @@ class Piece
     !board[jumped_location].nil? &&
       board[moved_pos].nil? &&
       board[jumped_location].color != color
-  end
-
-  def move_diffs
-    slide_deltas + jump_deltas
   end
 
   def moved_pos(delta)
