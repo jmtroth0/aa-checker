@@ -1,24 +1,53 @@
+require_relative 'board'
+
 class Game
+  attr_accessor :current_player, :other_player
+  attr_reader :board
+
   def initialize(board)
-    player1 = HumanPlayer.new(:white, board)
-    player2 = HumanPlayer.new(:black, board)
+    @board = board
+    @current_player = HumanPlayer.new(:white, board)
+    @other_player = HumanPlayer.new(:black, board)
   end
 
   def play
-    until over?
+    board.render
+
+    until board.over?
+      puts "It is your turn #{current_player.color.to_s.capitalize}"
       play_turn
       board.render
+      switch_players
     end
+
+    puts "Congrats #{board.winner}, you won!"
   end
 
   def play_turn
-    
+    begin
+      moves = current_player.prompt
+      if board.is_color?(moves.first, current_player.color)
+        raise InvalidMoveError.new("Move your own pieces.")
+      elsif !board.piece_at?(moves.first)
+        raise InvalidMoveError.new("You don't have a piece there")
+      end
+    rescue InvalidMoveError => e
+      puts e
+      retry
+    end
+    board.move(moves)
+  end
+
+  private
+
+  def switch_players
+    self.current_player, self.other_player = other_player, current_player
   end
 end
 
 
 class HumanPlayer
-  attr_reader :color
+  attr_reader :color, :board
 
   def initialize(color, board)
     @color = color
@@ -26,19 +55,20 @@ class HumanPlayer
   end
 
   def prompt
-    puts "Where would you like to move. If there are multiple places, just add\
-      a space between locations."
+    print "Where would you like to move. If there are multiple places, just add"
+    puts " a space between locations. Put the row first, then the column"
 
     begin
       moves = convert_to_move_sequence(gets.chomp)
-    raise "Not on Board" unless moves.all { |move| board.on_board?(move) }
-    rescue => e
-      puts e
-      puts "Try again."
+    raise "Not on Board" unless moves.all? { |move| board.on_board?(move) }
+    # rescue => e
+    #   puts e
+    #   puts "Try again."
     end
+    moves
   end
 
   def convert_to_move_sequence(move)
-    move.split.map { |move| move.map { |coord| coord + 1 } }
+    move.split.map { |move| move.split("").map { |coord| coord.to_i - 1 } }
   end
 end
